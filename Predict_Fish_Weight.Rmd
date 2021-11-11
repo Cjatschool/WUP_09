@@ -14,6 +14,13 @@ require(tigerstats)
 require(tidyverse)
 ```
 
+
+
+```{r}
+Fish=read.csv("Fish.csv")
+```
+
+
 # Introduction
 
 <!--In this section you explain what you are trying to show.  Where did the data come from?  What is the research or other question you are trying to answer?!-->
@@ -25,6 +32,9 @@ require(tidyverse)
 # Methods
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method.!-->
+
+
+We need to get the subset of fidh that contains the species we want to analysze. We will then look at each combination of predictor variables to see if we can predict the weight of the fish. We are using the perch subset for this analysis.
 
 #Results
 
