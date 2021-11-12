@@ -137,19 +137,32 @@ $H_A$:there is a difference between model1 and model 2 when predicting the weigh
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
 
 
-We fail to reject the null hypothesis because the p-value of 0.879 is very high. 
+We fail to reject the null hypothesis because the p-value of 0.879 is very high. So there isn't enough evidence to prove there  really is no difference between model 1 and 2
 
 
 
 
-## Build the best regression model you can that predicts the weight of perch
+## Build the best regression model you can that predicts the weight of pike
 ## Using only two predictor variables  
 
 
 # Methods
 
 <!--Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method.!-->
-  
+
+
+
+
+We need to get the subset of fish that contains the species we want to analyse. We will then look at each combination of predictor variables to see if we can predict the weight of the fish. We are using the pike subset for this analysis.
+
+
+
+```{r}
+pike=filter(Fish,Species=="Pike")
+```
+
+
+
 #Results  
   
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
@@ -160,13 +173,81 @@ We fail to reject the null hypothesis because the p-value of 0.879 is very high.
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
+
+
+```{r}
+basicNN <- ggplot(pike,aes(y=Weight,x=Length1^2))
+```
+##Now add in scatterplot
+
+```{r}
+basicNN + geom_point()
+```
+  
+
+
+```{r}
+basicNN + geom_point() + geom_smooth(method=lm)
+``` 
+
+
+
+
 ### Numerical Descriptive Results
 
 <!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
+
+
+
+```{r}
+library(leaps)
+regsubsets.out <-
+    regsubsets(Weight ~ .,
+               data = select (pike,-Species),
+               nbest = 1,       # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary.out <- summary(regsubsets.out)
+as.data.frame(summary.out$outmat)
+library(car)
+subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
+```
+
+
+
+```{r}
+which.max(summary.out$adjr2)
+```
+```{r}
+summary.out$which[2,]
+```
+
+```{r}
+best.model <- lm(Weight~Height+Width,data=pike)
+summary(best.model)
+fullup=lm(Weight~.,data = select(pike, -Species))
+```
+
+
+
+
+
 ## Inferential Results
 
 <!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
+
+
+$H_0$: there is no difference between model1 and model 2 when predicting the weight of the fish. (Pike)
+
+$H_A$:there is a difference between model1 and model 2 when predicting the weight of the fish. (Pike)
+
+
+```{r}
+ anova(fullup,best.model)
+```
 
 
 # Discussion and Conclusion
@@ -174,7 +255,7 @@ We fail to reject the null hypothesis because the p-value of 0.879 is very high.
 <!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
 
 
-
+The p- value of  0.000021 is very low, which means we reject the null hypothesis because there is strong evidence that there is a difference between model 1 and 2.
 
 
 ## Build the best regression model you can that predicts the weight of perch
